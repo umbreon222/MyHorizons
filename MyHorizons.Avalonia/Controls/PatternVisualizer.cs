@@ -20,11 +20,10 @@ namespace MyHorizons.Avalonia.Controls
             get => _design;
             protected set
             {
-                if (_design != value)
-                {
-                    _design = value;
-                    UpdateBitmap();
-                }
+                if (_design == value)
+                    return;
+                _design = value;
+                UpdateBitmap();
             }
         }
 
@@ -47,26 +46,25 @@ namespace MyHorizons.Avalonia.Controls
         {
             bitmap?.Dispose();
 
-            if (Design != null)
+            if (Design == null)
+                return;
+            var data = new uint[PATTERN_WIDTH * PATTERN_HEIGHT];
+            var x = 0;
+            var y = 0;
+            for (var i = 0; i < data.Length; i++, x++)
             {
-                var data = new uint[PATTERN_WIDTH * PATTERN_HEIGHT];
-                var x = 0;
-                var y = 0;
-                for (var i = 0; i < data.Length; i++, x++)
+                if (x == PATTERN_WIDTH)
                 {
-                    if (x == PATTERN_WIDTH)
-                    {
-                        x = 0;
-                        y++;
-                    }
-
-                    data[i] = Design.GetPixelArgb(x, y);
+                    x = 0;
+                    y++;
                 }
 
-                fixed (uint* p = data)
-                    bitmap = new Bitmap(PixelFormat.Bgra8888, (IntPtr)p, new PixelSize(PATTERN_WIDTH, PATTERN_HEIGHT), new Vector(96, 96), sizeof(uint) * PATTERN_WIDTH);
-                Background = new ImageBrush(bitmap);
+                data[i] = Design.GetPixelArgb(x, y);
             }
+
+            fixed (uint* p = data)
+                bitmap = new Bitmap(PixelFormat.Bgra8888, (IntPtr)p, new PixelSize(PATTERN_WIDTH, PATTERN_HEIGHT), new Vector(96, 96), sizeof(uint) * PATTERN_WIDTH);
+            Background = new ImageBrush(bitmap);
         }
     }
 }

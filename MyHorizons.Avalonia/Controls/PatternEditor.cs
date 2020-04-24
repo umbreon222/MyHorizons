@@ -12,19 +12,19 @@ namespace MyHorizons.Avalonia.Controls
 {
     public sealed class PatternEditor : PatternVisualizer
     {
-        private PaletteSelector _paletteSelector;
-        private IReadOnlyList<Line>? lineCache;
-        private int cellX = -1;
-        private int cellY = -1;
+        private readonly PaletteSelector _paletteSelector;
+        private IReadOnlyList<Line>? LineCache;
+        private int CellX = -1;
+        private int CellY = -1;
 
-        private double stepX;
-        private double stepY;
+        private double StepX;
+        private double StepY;
 
-        private bool leftDown = false;
-        private bool rightDown = false;
+        private bool LeftDown;
+        private bool RightDown;
 
-        private static readonly Pen gridPen = new Pen(new SolidColorBrush(0xFF999999), 2, null, PenLineCap.Flat, PenLineJoin.Bevel);
-        private static readonly Pen highlightPen = new Pen(new SolidColorBrush(0xFFFFFF00), 2, null, PenLineCap.Flat, PenLineJoin.Bevel);
+        private static readonly Pen GridPen = new Pen(new SolidColorBrush(0xFF999999), 2, null, PenLineCap.Flat, PenLineJoin.Bevel);
+        private static readonly Pen HighlightPen = new Pen(new SolidColorBrush(0xFFFFFF00), 2, null, PenLineCap.Flat, PenLineJoin.Bevel);
 
         public PatternEditor(DesignPattern pattern, PaletteSelector selector, double width = 32, double height = 32) : base(pattern, width, height)
         {
@@ -37,7 +37,7 @@ namespace MyHorizons.Avalonia.Controls
             PointerMoved += OnPointerMoved;
             PointerLeave += (o, e) =>
             {
-                cellX = cellY = -1;
+                CellX = CellY = -1;
                 InvalidateVisual();
             };
             PointerPressed += OnPointerPressed;
@@ -46,9 +46,9 @@ namespace MyHorizons.Avalonia.Controls
 
         private void Resize(double width, double height)
         {
-            stepX = width / PATTERN_WIDTH;
-            stepY = height / PATTERN_HEIGHT;
-            lineCache = GetGridCache(width + 1, height + 1, stepX, stepY);
+            StepX = width / PATTERN_WIDTH;
+            StepY = height / PATTERN_HEIGHT;
+            LineCache = GetGridCache(width + 1, height + 1, StepX, StepY);
             InvalidateVisual();
         }
 
@@ -63,7 +63,7 @@ namespace MyHorizons.Avalonia.Controls
             var point = e.GetPosition(sender as IVisual);
             if (point.X < 0 || point.Y < 0 || point.X >= Width || point.Y >= Height)
             {
-                cellX = cellY = -1;
+                CellX = CellY = -1;
                 InvalidateVisual();
             }
             else
@@ -72,25 +72,25 @@ namespace MyHorizons.Avalonia.Controls
                 var tY = (int)(point.Y / (Height / PATTERN_HEIGHT));
                 if (tX < 0 || tX >= PATTERN_WIDTH || tY < 0 || tY >= PATTERN_HEIGHT)
                 {
-                    cellX = cellY = -1;
+                    CellX = CellY = -1;
                     InvalidateVisual();
                 }
-                else if (tX != cellX || tY != cellY)
+                else if (tX != CellX || tY != CellY)
                 {
-                    cellX = tX;
-                    cellY = tY;
+                    CellX = tX;
+                    CellY = tY;
 
-                    if (leftDown)
+                    if (LeftDown)
                     {
-                        if (Design?.GetPixel(cellX, cellY) != _paletteSelector.SelectedIndex)
+                        if (Design?.GetPixel(CellX, CellY) != _paletteSelector.SelectedIndex)
                         {
-                            Design?.SetPixel(cellX, cellY, (byte)_paletteSelector.SelectedIndex);
+                            Design?.SetPixel(CellX, CellY, (byte)_paletteSelector.SelectedIndex);
                             UpdateBitmap();
                         }
                     }
-                    else if (rightDown)
+                    else if (RightDown)
                     {
-                        _paletteSelector.SelectedIndex = Design?.GetPixel(cellX, cellY) ?? -1;
+                        _paletteSelector.SelectedIndex = Design?.GetPixel(CellX, CellY) ?? -1;
                     }
 
                     InvalidateVisual();
@@ -104,18 +104,18 @@ namespace MyHorizons.Avalonia.Controls
             {
                 case PointerUpdateKind.LeftButtonPressed:
                     {
-                        if (Design?.GetPixel(cellX, cellY) != _paletteSelector.SelectedIndex)
+                        if (Design?.GetPixel(CellX, CellY) != _paletteSelector.SelectedIndex)
                         {
-                            Design?.SetPixel(cellX, cellY, (byte)_paletteSelector.SelectedIndex);
+                            Design?.SetPixel(CellX, CellY, (byte)_paletteSelector.SelectedIndex);
                             UpdateBitmap();
                         }
-                        leftDown = true;
+                        LeftDown = true;
                         break;
                     }
                 case PointerUpdateKind.RightButtonPressed:
                     {
-                        _paletteSelector.SelectedIndex = Design?.GetPixel(cellX, cellY) ?? -1;
-                        rightDown = true;
+                        _paletteSelector.SelectedIndex = Design?.GetPixel(CellX, CellY) ?? -1;
+                        RightDown = true;
                         break;
                     }
             }
@@ -127,12 +127,12 @@ namespace MyHorizons.Avalonia.Controls
             {
                 case PointerUpdateKind.LeftButtonReleased:
                     {
-                        leftDown = false;
+                        LeftDown = false;
                         break;
                     }
                 case PointerUpdateKind.RightButtonReleased:
                     {
-                        rightDown = false;
+                        RightDown = false;
                         break;
                     }
             }
@@ -143,13 +143,13 @@ namespace MyHorizons.Avalonia.Controls
             base.Render(context);
 
             // Draw grid
-            if (lineCache != null)
-                foreach (var line in lineCache)
-                    context.DrawLine(gridPen, line.Point0, line.Point1);
+            if (LineCache != null)
+                foreach (var line in LineCache)
+                    context.DrawLine(GridPen, line.Point0, line.Point1);
 
             // Draw highlight
-            if (cellX > -1 && cellY > -1)
-                context.DrawRectangle(highlightPen, new Rect(cellX * stepX, cellY * stepY, stepX, stepY));
+            if (CellX > -1 && CellY > -1)
+                context.DrawRectangle(HighlightPen, new Rect(CellX * StepX, CellY * StepY, StepX, StepY));
         }
     }
 }
