@@ -1,0 +1,37 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="MyHorizons.Avalonia.Controls.PlayersControl">
+  <Grid x:Name="PlayersGrid">
+    <StackPanel x:Name="PlayerSelectorPanel" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Height="120" Orientation="Horizontal" Spacing="20"/>
+    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Spacing="20">
+      <StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="10, 10, 0, 0" Spacing="5" Height="34" VerticalAlignment="Top">
+          <TextBlock Height="26" FontWeight="SemiBold" FontSize="16">Name:</TextBlock>
+          <TextBox x:Name="PlayerNameBox" MaxLength="10" MinWidth="120" FontSize="16"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="10, 10, 0, 0" Spacing="5" Height="34" VerticalAlignment="Top">
+          <TextBlock Height="26" FontWeight="SemiBold" FontSize="16">Wallet:</TextBlock>
+          <NumericUpDown x:Name="WalletBox" Height="34" MinWidth="100" Maximum="99999" Minimum="0"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="10, 10, 0, 0" Spacing="5" Height="34" VerticalAlignment="Top">
+          <TextBlock Height="26" FontWeight="SemiBold" FontSize="16">Bank:</TextBlock>
+          <NumericUpDown x:Name="BankBox" Height="34" MinWidth="100" Maximum="999999999" Minimum="0"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="10, 10, 0, 0" Spacing="5" Height="34" VerticalAlignment="Top">
+          <TextBlock Height="26" FontWeight="SemiBold" FontSize="16">Nook Miles:</TextBlock>
+          <NumericUpDown x:Name="NookMilesBox" Height="34" MinWidth="100" Maximum="999999999" Minimum="0"/>
+        </StackPanel>
+      </StackPanel>
+      <StackPanel x:Name="PocketsPanel" HorizontalAlignment="Center">
+        <TextBlock Height="26" FontWeight="SemiBold" FontSize="16">Pockets</TextBlock>
+      </StackPanel>
+      <StackPanel x:Name="StoragePanel" HorizontalAlignment="Center">
+        <TextBlock Height="26" FontWeight="SemiBold" FontSize="16">Storage</TextBlock>
+        <ScrollViewer x:Name="StorageScroller" VerticalScrollBarVisibility="Auto" MaxHeight="500"/>
+      </StackPanel>
+    </StackPanel>
+  </Grid>
+</UserControl>

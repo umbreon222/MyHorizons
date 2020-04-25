@@ -19,6 +19,11 @@
     </AvaloniaResource>
   </ItemGroup>
   <ItemGroup>
+    <AvaloniaResource Remove="Controls\TownsControl.xaml" />
+    <AvaloniaResource Remove="PlayersControl.xaml" />
+    <AvaloniaResource Remove="VillagersControl.xaml" />
+  </ItemGroup>
+  <ItemGroup>
     <None Remove="Resources\ant00.png" />
     <None Remove="Resources\ant01.png" />
     <None Remove="Resources\ant02.png" />
@@ -865,6 +870,21 @@
     <PackageReference Include="Avalonia.Desktop" Version="0.9.9" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.3" />
     <PackageReference Include="System.Resources.Extensions" Version="4.7.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Controls\PlayersControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Controls\VillagersControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Controls\TownsControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MyHorizons\MyHorizons.csproj" />

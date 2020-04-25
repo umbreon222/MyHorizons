@@ -116,14 +116,16 @@ namespace MyHorizons.Avalonia
                 HorizontalAlignment = HorizontalAlignment.Left
             };
 
-            var playersGrid = this.FindControl<StackPanel>("PocketsPanel");
+            var playersControl = this.FindControl<PlayersControl>("PlayersControl");
+            var playersGrid = playersControl.FindControl<StackPanel>("PocketsPanel");
             playersGrid.Children.Add(PlayerPocketsGrid);
 
-            this.FindControl<ScrollViewer>("StorageScroller").Content = PlayerStorageGrid;
+            playersControl.FindControl<ScrollViewer>("StorageScroller").Content = PlayerStorageGrid;
 
-            this.FindControl<StackPanel>("VillagerFurniturePanel").Children.Add(VillagerFurnitureGrid);
-            this.FindControl<StackPanel>("VillagerWallpaperPanel").Children.Add(VillagerWallpaperGrid);
-            this.FindControl<StackPanel>("VillagerFlooringPanel").Children.Add(VillagerFlooringGrid);
+            var villagersControl = this.FindControl<VillagersControl>("VillagersControl");
+            villagersControl.FindControl<StackPanel>("VillagerFurniturePanel").Children.Add(VillagerFurnitureGrid);
+            villagersControl.FindControl<StackPanel>("VillagerWallpaperPanel").Children.Add(VillagerWallpaperGrid);
+            villagersControl.FindControl<StackPanel>("VillagerFlooringPanel").Children.Add(VillagerFlooringGrid);
 
             SetSelectedItemIndex();
             
@@ -145,17 +147,16 @@ namespace MyHorizons.Avalonia
             {
                 for (var i = 0; i < ItemDatabase.Keys.Count; i++)
                 {
-                    if (ItemDatabase.Keys.ElementAt(i) == SelectedItem.ItemId)
-                    {
-                        SettingItem = true;
-                        this.FindControl<ComboBox>("ItemSelectBox").SelectedIndex = i;
-                        this.FindControl<NumericUpDown>("Flag0Box").Value = SelectedItem.Flags0;
-                        this.FindControl<NumericUpDown>("Flag1Box").Value = SelectedItem.Flags1;
-                        this.FindControl<NumericUpDown>("Flag2Box").Value = SelectedItem.Flags2;
-                        this.FindControl<NumericUpDown>("Flag3Box").Value = SelectedItem.Flags3;
-                        SettingItem = false;
-                        return;
-                    }
+                    if (ItemDatabase.Keys.ElementAt(i) != SelectedItem.ItemId)
+                        continue;
+                    SettingItem = true;
+                    this.FindControl<ComboBox>("ItemSelectBox").SelectedIndex = i;
+                    this.FindControl<NumericUpDown>("Flag0Box").Value = SelectedItem.Flags0;
+                    this.FindControl<NumericUpDown>("Flag1Box").Value = SelectedItem.Flags1;
+                    this.FindControl<NumericUpDown>("Flag2Box").Value = SelectedItem.Flags2;
+                    this.FindControl<NumericUpDown>("Flag3Box").Value = SelectedItem.Flags3;
+                    SettingItem = false;
+                    return;
                 }
             }
             this.FindControl<ComboBox>("ItemSelectBox").SelectedIndex = -1;
@@ -163,11 +164,10 @@ namespace MyHorizons.Avalonia
 
         public void SetItem(Item item)
         {
-            if (SelectedItem != item && ItemDatabase != null)
-            {
-                SelectedItem = item.Clone();
-                SetSelectedItemIndex();
-            }
+            if (SelectedItem == item || ItemDatabase == null)
+                return;
+            SelectedItem = item.Clone();
+            SetSelectedItemIndex();
         }
 
         private void SetupUniversalConnections()
@@ -204,22 +204,23 @@ namespace MyHorizons.Avalonia
 
         private void SetupPlayerTabConnections()
         {
-            this.FindControl<TextBox>("PlayerNameBox").GetObservable(TextBox.TextProperty).Subscribe(text =>
+            var playersControl = this.FindControl<PlayersControl>("PlayersControl");
+            playersControl.FindControl<TextBox>("PlayerNameBox").GetObservable(TextBox.TextProperty).Subscribe(text =>
             {
                 if (!PlayerLoading)
                     SelectedPlayer?.SetName(text);
             });
-            this.FindControl<NumericUpDown>("WalletBox").ValueChanged += (o, e) =>
+            playersControl.FindControl<NumericUpDown>("WalletBox").ValueChanged += (o, e) =>
             {
                 if (!PlayerLoading)
                     SelectedPlayer?.Wallet.Set((uint)e.NewValue);
             };
-            this.FindControl<NumericUpDown>("BankBox").ValueChanged += (o, e) =>
+            playersControl.FindControl<NumericUpDown>("BankBox").ValueChanged += (o, e) =>
             {
                 if (!PlayerLoading)
                     SelectedPlayer?.Bank.Set((uint)e.NewValue);
             };
-            this.FindControl<NumericUpDown>("NookMilesBox").ValueChanged += (o, e) =>
+            playersControl.FindControl<NumericUpDown>("NookMilesBox").ValueChanged += (o, e) =>
             {
                 if (!PlayerLoading)
                     SelectedPlayer?.NookMiles.Set((uint)e.NewValue);
@@ -228,20 +229,21 @@ namespace MyHorizons.Avalonia
 
         private void SetupVillagerTabConnections()
         {
-            var villagerBox = this.FindControl<ComboBox>("VillagerBox");
+            var villagersControl = this.FindControl<VillagersControl>("VillagersControl");
+            var villagerBox = villagersControl.FindControl<ComboBox>("VillagerBox");
             villagerBox.SelectionChanged += (o, e) => SetVillagerFromIndex(villagerBox.SelectedIndex);
-            var personalityBox = this.FindControl<ComboBox>("PersonalityBox");
+            var personalityBox = villagersControl.FindControl<ComboBox>("PersonalityBox");
             personalityBox.SelectionChanged += (o, e) =>
             {
                 if (SelectedVillager != null)
                     SelectedVillager.Personality = (byte)personalityBox.SelectedIndex;
             };
-            this.FindControl<TextBox>("CatchphraseBox").GetObservable(TextBox.TextProperty).Subscribe(text =>
+            villagersControl.FindControl<TextBox>("CatchphraseBox").GetObservable(TextBox.TextProperty).Subscribe(text =>
             {
                 if (SelectedVillager != null)
                     SelectedVillager.Catchphrase = text;
             });
-            this.FindControl<CheckBox>("VillagerMovingOutBox").GetObservable(ToggleButton.IsCheckedProperty).Subscribe(isChecked => {
+            villagersControl.FindControl<CheckBox>("VillagerMovingOutBox").GetObservable(ToggleButton.IsCheckedProperty).Subscribe(isChecked => {
                 if (SelectedVillager != null && isChecked != null)
                     SelectedVillager.SetIsMovingOut(isChecked.Value);
             });
@@ -275,7 +277,8 @@ namespace MyHorizons.Avalonia
         {
             if (SaveFile == null)
                 return;
-            var contentHolder = this.FindControl<StackPanel>("PlayerSelectorPanel");
+            var playersControl = this.FindControl<PlayersControl>("PlayersControl");
+            var contentHolder = playersControl.FindControl<StackPanel>("PlayerSelectorPanel");
             foreach (var playerSave in SaveFile.GetPlayerSaves())
             {
                 var player = playerSave.Player;
@@ -304,10 +307,11 @@ namespace MyHorizons.Avalonia
                 return;
             PlayerLoading = true;
             SelectedPlayer = player;
-            this.FindControl<TextBox>("PlayerNameBox").Text = player.GetName();
-            this.FindControl<NumericUpDown>("WalletBox").Value = player.Wallet.Decrypt();
-            this.FindControl<NumericUpDown>("BankBox").Value = player.Bank.Decrypt();
-            this.FindControl<NumericUpDown>("NookMilesBox").Value = player.NookMiles.Decrypt();
+            var playersControl = this.FindControl<PlayersControl>("PlayersControl");
+            playersControl.FindControl<TextBox>("PlayerNameBox").Text = player.GetName();
+            playersControl.FindControl<NumericUpDown>("WalletBox").Value = player.Wallet.Decrypt();
+            playersControl.FindControl<NumericUpDown>("BankBox").Value = player.Bank.Decrypt();
+            playersControl.FindControl<NumericUpDown>("NookMilesBox").Value = player.NookMiles.Decrypt();
             PlayerPocketsGrid.Items = player.Pockets;
             PlayerStorageGrid.Items = player.Storage;
             PlayerLoading = false;
@@ -315,45 +319,45 @@ namespace MyHorizons.Avalonia
 
         private void LoadPatterns()
         {
-            if (SaveFile?.Town != null)
+            if (SaveFile?.Town == null)
+                return;
+            var panel = this.FindControl<StackPanel>("DesignsPanel");
+            var paletteSelector = new PaletteSelector(SaveFile.Town.Patterns[0]) { Margin = new Thickness(410, 0, 0, 0) };
+            var editor = new PatternEditor(SaveFile.Town.Patterns[0], paletteSelector, 384, 384);
+            for (var i = 0; i < 50; i++)
             {
-                var panel = this.FindControl<StackPanel>("DesignsPanel");
-                var paletteSelector = new PaletteSelector(SaveFile.Town.Patterns[0]) { Margin = new Thickness(410, 0, 0, 0) };
-                var editor = new PatternEditor(SaveFile.Town.Patterns[0], paletteSelector, 384, 384);
-                for (var i = 0; i < 50; i++)
-                {
-                    var visualizer = new PatternVisualizer(SaveFile.Town.Patterns[i]);
-                    visualizer.PointerPressed += (o, e) => editor.SetDesign(visualizer.Design);
-                    panel.Children.Add(visualizer);
-                }
-                this.FindControl<Grid>("DesignsContent").Children.Insert(0, editor);
-                this.FindControl<Grid>("DesignsContent").Children.Insert(1, paletteSelector);
+                var visualizer = new PatternVisualizer(SaveFile.Town.Patterns[i]);
+                visualizer.PointerPressed += (o, e) => editor.SetDesign(visualizer.Design);
+                panel.Children.Add(visualizer);
             }
+            this.FindControl<Grid>("DesignsContent").Children.Insert(0, editor);
+            this.FindControl<Grid>("DesignsContent").Children.Insert(1, paletteSelector);
         }
 
         private void LoadVillager(Villager villager)
         {
+            var villagersControl = this.FindControl<VillagersControl>("VillagersControl");
             if (villager == null || villager == SelectedVillager)
                 return;
-            var villagerPanel = this.FindControl<StackPanel>("VillagerPanel");
+            var villagerPanel = villagersControl.FindControl<StackPanel>("VillagerPanel");
             if (SelectedVillager != null && villagerPanel.Children[SelectedVillager.Index] is Button currentButton)
                 currentButton.Background = Brushes.Transparent;
 
             SelectedVillager = null;
             if (VillagerDatabase != null)
             {
-                var comboBox = this.FindControl<ComboBox>("VillagerBox");
+                var comboBox = villagersControl.FindControl<ComboBox>("VillagerBox");
                 comboBox.SelectedIndex = GetIndexFromVillagerName(VillagerDatabase[villager.Species][villager.VariantIdx]);
             }
-            this.FindControl<ComboBox>("PersonalityBox").SelectedIndex = villager.Personality;
-            this.FindControl<TextBox>("CatchphraseBox").Text = villager.Catchphrase;
+            villagersControl.FindControl<ComboBox>("PersonalityBox").SelectedIndex = villager.Personality;
+            villagersControl.FindControl<TextBox>("CatchphraseBox").Text = villager.Catchphrase;
             VillagerFurnitureGrid.Items = villager.Furniture;
             VillagerWallpaperGrid.Items = villager.Wallpaper;
             VillagerFlooringGrid.Items = villager.Flooring;
             if (villagerPanel.Children[villager.Index] is Button btn)
                 btn.Background = Brushes.LightGray;
             SelectedVillager = villager;
-            this.FindControl<CheckBox>("VillagerMovingOutBox").IsChecked = villager.IsMovingOut();
+            villagersControl.FindControl<CheckBox>("VillagerMovingOutBox").IsChecked = villager.IsMovingOut();
         }
 
         private int GetIndexFromVillagerName(string name)
@@ -375,6 +379,7 @@ namespace MyHorizons.Avalonia
 
         private void SetVillagerFromIndex(int index)
         {
+            var villagersControl = this.FindControl<VillagersControl>("VillagersControl");
             if (VillagerDatabase == null || SelectedVillager == null || index <= -1)
                 return;
             var imageLoader = new ImageLoader();
@@ -392,7 +397,7 @@ namespace MyHorizons.Avalonia
                         SelectedVillager.VariantIdx = variant;
 
                         // Update image
-                        var panel = this.FindControl<StackPanel>("VillagerPanel");
+                        var panel = villagersControl.FindControl<StackPanel>("VillagerPanel");
                         if (!(panel.Children[SelectedVillager.Index] is Button btn) || !(btn.Content is Image img))
                             return;
                         img.Source = imageLoader.LoadImageForVillager(SelectedVillager);
@@ -408,7 +413,6 @@ namespace MyHorizons.Avalonia
         {
             if (SaveFile?.Town == null)
                 return;
-            var villagerControl = this.FindControl<StackPanel>("VillagerPanel");
             var imageLoader = new ImageLoader();
             for (var i = 0; i < 10; i++)
             {
@@ -430,21 +434,23 @@ namespace MyHorizons.Avalonia
                 button.Click += (o, e) => LoadVillager(villager);
                 if (VillagerDatabase != null)
                     ToolTip.SetTip(img, VillagerDatabase[villager.Species][villager.VariantIdx]);
-                villagerControl.Children.Add(button);
+                var villagersControl = this.FindControl<VillagersControl>("VillagersControl");
+                villagersControl.FindControl<StackPanel>("VillagerPanel").Children.Add(button);
             }
         }
 
         private void LoadVillagerComboBoxItems()
         {
+            var villagersControl = this.FindControl<VillagersControl>("VillagersControl");
             if (VillagerDatabase != null)
             {
-                var comboBox = this.FindControl<ComboBox>("VillagerBox");
+                var comboBox = villagersControl.FindControl<ComboBox>("VillagerBox");
                 var villagerList = new List<string>();
                 foreach (var speciesList in VillagerDatabase)
                     villagerList.AddRange(speciesList.Values);
                 comboBox.Items = villagerList;
             }
-            this.FindControl<ComboBox>("PersonalityBox").Items = Villager.Personalities;
+            villagersControl.FindControl<ComboBox>("PersonalityBox").Items = Villager.Personalities;
         }
 
         private async void OpenFileButton_Click(object? o, RoutedEventArgs e)
@@ -561,12 +567,10 @@ namespace MyHorizons.Avalonia
 
         private Bitmap? LoadPlayerPhoto(int index)
         {
-            if (SaveFile != null)
-            {
-                using var memStream = new MemoryStream(SaveFile.GetPlayer(index).GetPhotoData());
-                return new Bitmap(memStream);
-            }
-            return null;
+            if (SaveFile == null)
+                return null;
+            using var memStream = new MemoryStream(SaveFile.GetPlayer(index).GetPhotoData());
+            return new Bitmap(memStream);
         }
     }
 }

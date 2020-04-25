@@ -1,0 +1,46 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="MyHorizons.Avalonia.Controls.VillagersControl">
+  <Grid>
+    <StackPanel>
+      <StackPanel Orientation="Horizontal" Margin="10, 10, 0, 0" Spacing="5" Height="34" VerticalAlignment="Top">
+        <TextBlock Height="26" FontWeight="SemiBold" FontSize="16">Search:</TextBlock>
+        <StackPanel Orientation="Horizontal">
+          <TextBox x:Name="VillagerFilter" MinWidth="130" FontSize="16"/>
+          <Button x:Name="VillagerFilterClear" Background="#648589">
+            <Image HorizontalAlignment="Center" VerticalAlignment="Center" Width="16" Height="8" Source="resm:MyHorizons.Avalonia.Resources.Close.png"/>
+          </Button>
+        </StackPanel>
+      </StackPanel>
+      <StackPanel Orientation="Horizontal" Margin="10, 10, 0, 0" Spacing="5" Height="34" VerticalAlignment="Top">
+        <TextBlock Height="26" FontWeight="SemiBold" FontSize="16">Villager:</TextBlock>
+        <ComboBox x:Name="VillagerBox" MinWidth="130" FontSize="16" AutoScrollToSelectedItem="True"/>
+      </StackPanel>
+      <StackPanel Orientation="Horizontal" Margin="10, 10, 0, 0" Spacing="5" Height="34" VerticalAlignment="Top">
+        <TextBlock Height="26" FontWeight="SemiBold" FontSize="16">Personality:</TextBlock>
+        <ComboBox x:Name="PersonalityBox" MinWidth="130" FontSize="16"/>
+      </StackPanel>
+      <StackPanel Orientation="Horizontal" Margin="10, 10, 0, 0" Spacing="5" Height="34" VerticalAlignment="Top">
+        <TextBlock Height="26" FontWeight="SemiBold" FontSize="16">Catchphrase:</TextBlock>
+        <TextBox x:Name="CatchphraseBox" MaxLength="12" MinWidth="130" FontSize="16"/>
+      </StackPanel>
+      <StackPanel x:Name="VillagerFurniturePanel" Margin="10, 10, 0, 0" Spacing="5" VerticalAlignment="Top" Orientation="Vertical">
+        <TextBlock Height="26" FontWeight="SemiBold" FontSize="16">Furniture</TextBlock>
+      </StackPanel>
+      <StackPanel x:Name="VillagerWallpaperPanel" Margin="10, 10, 0, 0" Spacing="5" VerticalAlignment="Top" Orientation="Vertical">
+        <TextBlock Height="26" FontWeight="SemiBold" FontSize="16">Wallpaper</TextBlock>
+      </StackPanel>
+      <StackPanel x:Name="VillagerFlooringPanel" Margin="10, 10, 0, 0" Spacing="5" VerticalAlignment="Top" Orientation="Vertical">
+        <TextBlock Height="26" FontWeight="SemiBold" FontSize="16">Flooring</TextBlock>
+      </StackPanel>
+      <StackPanel x:Name="VillagerMovingOutPanel" Margin="10, 10, 0, 0" Spacing="5" VerticalAlignment="Top" Orientation="Horizontal">
+        <TextBlock Height="26" FontWeight="SemiBold" FontSize="16">Moving Out:</TextBlock>
+        <CheckBox x:Name="VillagerMovingOutBox"/>
+      </StackPanel>
+    </StackPanel>
+    <StackPanel x:Name="VillagerPanel" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10, 0, 0, 10" Orientation="Horizontal" Spacing="4"/>
+  </Grid>
+</UserControl>
